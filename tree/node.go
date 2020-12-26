@@ -3,7 +3,8 @@ package tree
 type Node struct {
 	Key      string `header:"key"`
 	children []*Node
-	Count    int `header:"count"`
+	Count    int     `header:"count"`
+	Share    float64 `header:"share (%)"`
 }
 
 func NewNode(key string) *Node {

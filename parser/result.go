@@ -34,19 +34,26 @@ func (r *Result) IncrModeCount(mode string) {
 }
 
 type SortedEntry struct {
-	Name  string `header:"name"`
-	Count int    `header:"count"`
+	Name  string  `header:"name"`
+	Count int     `header:"count"`
+	Share float64 `header:"share (%)"`
 }
 
 func (r Result) SortedModeCounts() []SortedEntry {
 	ss := make([]SortedEntry, 0)
+
+	total := r.totalKeypresses(true)
 
 	for k, v := range r.ModeCounts {
 		if v < 1 {
 			continue
 		}
 
-		ss = append(ss, SortedEntry{k, v})
+		ss = append(ss, SortedEntry{
+			Name:  k,
+			Count: v,
+			Share: float64(v*100) / float64(total),
+		})
 	}
 
 	sort.Slice(ss, func(i, j int) bool {
@@ -59,9 +66,26 @@ func (r Result) SortedModeCounts() []SortedEntry {
 func (r Result) SortedKeyMap() []*tree.Node {
 	rootChilds := r.KeyMap.Children()
 
+	total := r.totalKeypresses(false)
+	for i := range rootChilds {
+		rootChilds[i].Share = float64(rootChilds[i].Count*100) / float64(total)
+	}
+
 	sort.Slice(rootChilds, func(i, j int) bool {
 		return rootChilds[i].Count > rootChilds[j].Count
 	})
 
 	return rootChilds
+}
+
+func (r Result) totalKeypresses(includeInsertMode bool) int64 {
+	var total int64
+	for mode, count := range r.ModeCounts {
+		if mode == InsertMode && !includeInsertMode {
+			continue
+		}
+		total += int64(count)
+	}
+
+	return total
 }

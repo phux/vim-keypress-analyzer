@@ -28,7 +28,7 @@ func main() {
 	}
 	cliApp := &cli.App{
 		Flags: flags,
-		Name:  "vimkeypressanalyzer",
+		Name:  "Vim Keypress Analyzer",
 		Usage: "parse the pressed keys in vim and give a helpful analysis",
 		Action: func(c *cli.Context) error {
 			logfile := c.String("file")

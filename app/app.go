@@ -40,16 +40,18 @@ func (a App) Analyze(log io.Reader, limit int64) error {
 
 	sortedModeCounts := result.SortedModeCounts()
 
-	totalSum := 0
-	for _, mode := range sortedModeCounts {
-		totalSum += mode.Count
-	}
+	totalSum := result.TotalKeypresses(true)
 
 	fmt.Printf("Key presses per mode (total: %d)\n", totalSum)
 
 	printer.Print(sortedModeCounts)
 
-	fmt.Println("\nKey presses (in non-INSERT mode)")
+	totalSumWithoutInsert := result.TotalKeypresses(false)
+
+	fmt.Printf(
+		"\nKey presses in non-INSERT mode (total: %d)\n",
+		totalSumWithoutInsert,
+	)
 
 	sortedKeys := result.SortedKeyMap()
 	if limit > 0 {

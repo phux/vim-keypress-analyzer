@@ -49,7 +49,7 @@ func (a App) Analyze(log io.Reader, limit int64) error {
 	totalSumWithoutInsert := result.TotalKeypresses(false)
 
 	fmt.Printf(
-		"\nKey presses in non-INSERT mode (total: %d)\n",
+		"\nKey presses in non-INSERT modes (total: %d)\n",
 		totalSumWithoutInsert,
 	)
 

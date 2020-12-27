@@ -54,7 +54,7 @@ func (a App) Analyze(log io.Reader, limit int64) error {
 	)
 
 	sortedKeys := result.SortedKeyMap()
-	if limit > 0 {
+	if limit > 0 && len(sortedKeys) > int(limit) {
 		sortedKeys = sortedKeys[0:limit]
 	}
 

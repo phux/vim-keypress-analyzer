@@ -17,7 +17,6 @@ func TestParser_Parse(t *testing.T) {
 
 	tests := []struct {
 		args              args
-		want              *parser.Result
 		expectedKeyMap    func() *tree.Node
 		expectedModeCount func() *tree.Node
 		name              string
@@ -40,17 +39,13 @@ func TestParser_Parse(t *testing.T) {
 			name: "single key",
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				node := tree.NewNode("j")
-				node.Count = 1
-				rootNode.AddChild(node)
+				addChildWithCount(rootNode, "j", 1)
 
 				return rootNode
 			},
 			expectedModeCount: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				node := tree.NewNode(parser.NormalMode)
-				node.Count = 1
-				rootNode.AddChild(node)
+				addChildWithCount(rootNode, parser.NormalMode, 1)
 
 				return rootNode
 			},
@@ -63,17 +58,13 @@ func TestParser_Parse(t *testing.T) {
 			name: "repeating the same key",
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				node := tree.NewNode("j")
-				node.Count = 2
-				rootNode.AddChild(node)
+				addChildWithCount(rootNode, "j", 2)
 
 				return rootNode
 			},
 			expectedModeCount: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				nodeNormal := tree.NewNode(parser.NormalMode)
-				nodeNormal.Count = 2
-				rootNode.AddChild(nodeNormal)
+				addChildWithCount(rootNode, parser.NormalMode, 2)
 
 				return rootNode
 			},
@@ -86,17 +77,13 @@ func TestParser_Parse(t *testing.T) {
 			name: "escape key",
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				node := tree.NewNode(parser.CharReadableEsc)
-				node.Count = 1
-				rootNode.AddChild(node)
+				addChildWithCount(rootNode, parser.CharReadableEsc, 1)
 
 				return rootNode
 			},
 			expectedModeCount: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				nodeNormal := tree.NewNode(parser.NormalMode)
-				nodeNormal.Count = 1
-				rootNode.AddChild(nodeNormal)
+				addChildWithCount(rootNode, parser.NormalMode, 1)
 
 				return rootNode
 			},
@@ -109,20 +96,14 @@ func TestParser_Parse(t *testing.T) {
 			name: "i<esc>",
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				nodeI := tree.NewNode("i")
-				nodeI.Count = 1
-				rootNode.AddChild(nodeI)
+				addChildWithCount(rootNode, "i", 1)
 
 				return rootNode
 			},
 			expectedModeCount: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				nodeNormal := tree.NewNode(parser.NormalMode)
-				nodeNormal.Count = 1
-				rootNode.AddChild(nodeNormal)
-				nodeInsert := tree.NewNode(parser.InsertMode)
-				nodeInsert.Count = 1
-				rootNode.AddChild(nodeInsert)
+				addChildWithCount(rootNode, parser.NormalMode, 1)
+				addChildWithCount(rootNode, parser.InsertMode, 1)
 
 				return rootNode
 			},
@@ -135,23 +116,15 @@ func TestParser_Parse(t *testing.T) {
 			name: "ji<esc>j",
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				nodeJ := tree.NewNode("j")
-				nodeJ.Count = 2
-				rootNode.AddChild(nodeJ)
-				nodeI := tree.NewNode("i")
-				nodeI.Count = 1
-				rootNode.AddChild(nodeI)
+				addChildWithCount(rootNode, "j", 2)
+				addChildWithCount(rootNode, "i", 1)
 
 				return rootNode
 			},
 			expectedModeCount: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				nodeNormal := tree.NewNode(parser.NormalMode)
-				nodeNormal.Count = 3
-				rootNode.AddChild(nodeNormal)
-				nodeInsert := tree.NewNode(parser.InsertMode)
-				nodeInsert.Count = 1
-				rootNode.AddChild(nodeInsert)
+				addChildWithCount(rootNode, parser.NormalMode, 3)
+				addChildWithCount(rootNode, parser.InsertMode, 1)
 
 				return rootNode
 			},
@@ -164,20 +137,14 @@ func TestParser_Parse(t *testing.T) {
 			name: "going twice into command mode",
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				node := tree.NewNode(":")
-				node.Count = 2
-				rootNode.AddChild(node)
+				addChildWithCount(rootNode, ":", 2)
 
 				return rootNode
 			},
 			expectedModeCount: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				nodeNormal := tree.NewNode(parser.NormalMode)
-				nodeNormal.Count = 1
-				rootNode.AddChild(nodeNormal)
-				nodeCommand := tree.NewNode(parser.CommandMode)
-				nodeCommand.Count = 1
-				rootNode.AddChild(nodeCommand)
+				addChildWithCount(rootNode, parser.NormalMode, 1)
+				addChildWithCount(rootNode, parser.CommandMode, 1)
 
 				return rootNode
 			},
@@ -190,20 +157,14 @@ func TestParser_Parse(t *testing.T) {
 			name: "going into insert mode via cc",
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				node := tree.NewNode("c")
-				node.Count = 2
-				rootNode.AddChild(node)
+				addChildWithCount(rootNode, "c", 2)
 
 				return rootNode
 			},
 			expectedModeCount: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				nodeNormal := tree.NewNode(parser.NormalMode)
-				nodeNormal.Count = 2
-				rootNode.AddChild(nodeNormal)
-				nodeInsert := tree.NewNode(parser.InsertMode)
-				nodeInsert.Count = 1
-				rootNode.AddChild(nodeInsert)
+				addChildWithCount(rootNode, parser.NormalMode, 2)
+				addChildWithCount(rootNode, parser.InsertMode, 1)
 
 				return rootNode
 			},
@@ -216,23 +177,15 @@ func TestParser_Parse(t *testing.T) {
 			name: "going into insert mode via C",
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				node := tree.NewNode("C")
-				node.Count = 1
-				rootNode.AddChild(node)
-				nodeC := tree.NewNode("c")
-				nodeC.Count = 1
-				rootNode.AddChild(nodeC)
+				addChildWithCount(rootNode, "C", 1)
+				addChildWithCount(rootNode, "c", 1)
 
 				return rootNode
 			},
 			expectedModeCount: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				nodeNormal := tree.NewNode(parser.NormalMode)
-				nodeNormal.Count = 2
-				rootNode.AddChild(nodeNormal)
-				nodeInsert := tree.NewNode(parser.InsertMode)
-				nodeInsert.Count = 1
-				rootNode.AddChild(nodeInsert)
+				addChildWithCount(rootNode, parser.NormalMode, 2)
+				addChildWithCount(rootNode, parser.InsertMode, 1)
 
 				return rootNode
 			},
@@ -245,33 +198,18 @@ func TestParser_Parse(t *testing.T) {
 			name: "visual mode",
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				nodeV := tree.NewNode("V")
-				nodeV.Count = 1
-				rootNode.AddChild(nodeV)
-				nodej := tree.NewNode("j")
-				nodej.Count = 1
-				rootNode.AddChild(nodej)
-				nodeEsc := tree.NewNode(parser.CharReadableEsc)
-				nodeEsc.Count = 1
-				rootNode.AddChild(nodeEsc)
-
-				nodev := tree.NewNode("v")
-				nodev.Count = 1
-				rootNode.AddChild(nodev)
-				nodeG := tree.NewNode("G")
-				nodeG.Count = 1
-				rootNode.AddChild(nodeG)
+				addChildWithCount(rootNode, "V", 1)
+				addChildWithCount(rootNode, "j", 1)
+				addChildWithCount(rootNode, parser.CharReadableEsc, 1)
+				addChildWithCount(rootNode, "v", 1)
+				addChildWithCount(rootNode, "G", 1)
 
 				return rootNode
 			},
 			expectedModeCount: func() *tree.Node {
 				rootNode := tree.NewNode("")
-				node := tree.NewNode(parser.NormalMode)
-				node.Count = 2
-				rootNode.AddChild(node)
-				nodeVisual := tree.NewNode(parser.VisualMode)
-				nodeVisual.Count = 3
-				rootNode.AddChild(nodeVisual)
+				addChildWithCount(rootNode, parser.NormalMode, 2)
+				addChildWithCount(rootNode, parser.VisualMode, 3)
 
 				return rootNode
 			},
@@ -301,4 +239,10 @@ func TestParser_Parse(t *testing.T) {
 			require.EqualValues(t, expectedResult, got)
 		})
 	}
+}
+
+func addChildWithCount(rootNode *tree.Node, identifier string, count int) {
+	node := tree.NewNode(identifier)
+	node.Count = count
+	rootNode.AddChild(node)
 }

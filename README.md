@@ -58,13 +58,26 @@ Key presses in non-INSERT mode (total: 960)
 
 ## Collecting keypresses in vim/nvim
 
-Execute (n)vim with the `-w path/to/logfile` flag to generate a keypress log file. Note: the file is only written on exiting (n)vim.
+Execute (n)vim with the `-w path/to/logfile` (see `:h -w`) flag to generate
+a keypress log file.
+Note: the file is only written on exiting (n)vim.
 
-Helpful alias:
+Helpful alias to always log your keys:
 
 ```sh
-n='nvim -w ~/.nvim_keylog "$@"'
-v='vim -w ~/.vim_keylog "$@"'
+alias n='nvim -w ~/.nvim_keylog "$@"'
+# or
+alias v='vim -w ~/.vim_keylog "$@"'
+```
+
+If you want to split the logs per day, to track progress for example:
+
+```sh
+mkdir ~/.vim_logs
+
+alias n='nvim -w ~/.vim_logs/$(date -Idate).log "$@"'
+# or
+alias v='vim -w ~/.vim_logs/$(date -Idate).log "$@"'
 ```
 
 ## Usage

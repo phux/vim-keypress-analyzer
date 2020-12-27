@@ -40,8 +40,9 @@ func TestAntipatternTracker_Track_NormalMode(t *testing.T) {
 			keys: []string{"w", "w", "w"},
 			expectedAntipatterns: map[string]*parser.Antipattern{
 				"www+": {
-					Key:   "www+",
-					Count: 1,
+					Key:             "www+",
+					Count:           1,
+					TotalKeypresses: 3,
 				},
 			},
 		},
@@ -50,8 +51,9 @@ func TestAntipatternTracker_Track_NormalMode(t *testing.T) {
 			keys: []string{"w", "w", "w", "w"},
 			expectedAntipatterns: map[string]*parser.Antipattern{
 				"www+": {
-					Key:   "www+",
-					Count: 1,
+					Key:             "www+",
+					Count:           1,
+					TotalKeypresses: 4,
 				},
 			},
 		},
@@ -65,8 +67,9 @@ func TestAntipatternTracker_Track_NormalMode(t *testing.T) {
 			keys: []string{"d", "d", "d", "d"},
 			expectedAntipatterns: map[string]*parser.Antipattern{
 				"dddd+": {
-					Key:   "dddd+",
-					Count: 1,
+					Key:             "dddd+",
+					Count:           1,
+					TotalKeypresses: 4,
 				},
 			},
 		},
@@ -85,12 +88,14 @@ func TestAntipatternTracker_Track_NormalMode(t *testing.T) {
 			keys: []string{"w", "w", "w", "j", "j", "j"},
 			expectedAntipatterns: map[string]*parser.Antipattern{
 				"www+": {
-					Key:   "www+",
-					Count: 1,
+					Key:             "www+",
+					Count:           1,
+					TotalKeypresses: 3,
 				},
 				"jjj+": {
-					Key:   "jjj+",
-					Count: 1,
+					Key:             "jjj+",
+					Count:           1,
+					TotalKeypresses: 3,
 				},
 			},
 		},
@@ -99,18 +104,20 @@ func TestAntipatternTracker_Track_NormalMode(t *testing.T) {
 			keys: []string{"w", "w", "w", "j", "w", "w", "w"},
 			expectedAntipatterns: map[string]*parser.Antipattern{
 				"www+": {
-					Key:   "www+",
-					Count: 2,
+					Key:             "www+",
+					Count:           2,
+					TotalKeypresses: 6,
 				},
 			},
 		},
 		{
 			name: "move right (l) and press i instead of just a",
-			keys: []string{"l", "i"},
+			keys: []string{"l", "i", "l", "i"},
 			expectedAntipatterns: map[string]*parser.Antipattern{
 				"li": {
-					Key:   "li",
-					Count: 1,
+					Key:             "li",
+					Count:           2,
+					TotalKeypresses: 4,
 				},
 			},
 		},
@@ -119,8 +126,9 @@ func TestAntipatternTracker_Track_NormalMode(t *testing.T) {
 			keys: []string{"h", "a"},
 			expectedAntipatterns: map[string]*parser.Antipattern{
 				"ha": {
-					Key:   "ha",
-					Count: 1,
+					Key:             "ha",
+					Count:           1,
+					TotalKeypresses: 2,
 				},
 			},
 		},
@@ -129,8 +137,9 @@ func TestAntipatternTracker_Track_NormalMode(t *testing.T) {
 			keys: []string{"j", "O"},
 			expectedAntipatterns: map[string]*parser.Antipattern{
 				"jO": {
-					Key:   "jO",
-					Count: 1,
+					Key:             "jO",
+					Count:           1,
+					TotalKeypresses: 2,
 				},
 			},
 		},
@@ -139,8 +148,9 @@ func TestAntipatternTracker_Track_NormalMode(t *testing.T) {
 			keys: []string{"k", "o"},
 			expectedAntipatterns: map[string]*parser.Antipattern{
 				"ko": {
-					Key:   "ko",
-					Count: 1,
+					Key:             "ko",
+					Count:           1,
+					TotalKeypresses: 2,
 				},
 			},
 		},
@@ -184,8 +194,9 @@ func TestAntipatternTracker_Track_InsertMode(t *testing.T) {
 			},
 			expectedAntipatterns: map[string]*parser.Antipattern{
 				"i<cr>": {
-					Key:   "i<cr>",
-					Count: 1,
+					Key:             "i<cr>",
+					Count:           1,
+					TotalKeypresses: 2,
 				},
 			},
 		},
@@ -197,8 +208,9 @@ func TestAntipatternTracker_Track_InsertMode(t *testing.T) {
 			},
 			expectedAntipatterns: map[string]*parser.Antipattern{
 				"a<cr>": {
-					Key:   "a<cr>",
-					Count: 1,
+					Key:             "a<cr>",
+					Count:           1,
+					TotalKeypresses: 2,
 				},
 			},
 		},

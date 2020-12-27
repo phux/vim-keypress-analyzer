@@ -18,12 +18,14 @@ func NewAntipatternTracker(maxAllowedRepeats int64) *AntipatternTracker {
 }
 
 type Antipattern struct {
-	Key   string `header:"pattern"`
-	Count int64  `header:"count"`
+	Key               string  `header:"pattern"`
+	Count             int64   `header:"count"`
+	TotalKeypresses   int64   `header:"total key presses"`
+	AverageKeypresses float64 `header:"avg keys per occurrence"`
 }
 
 func (t *AntipatternTracker) Track(currentKey, currentMode string) {
-	// TODO: double key patterns: dddd instead of dj
+	// TODO: multi key patterns: dwdwdw instead of d3w
 	if currentMode != NormalMode && currentMode != VisualMode {
 		t.consecutiveKeyCount = 0
 	} else {
@@ -32,8 +34,10 @@ func (t *AntipatternTracker) Track(currentKey, currentMode string) {
 
 	if currentMode == InsertMode && t.lastMode != InsertMode && currentKey == "<cr>" {
 		switch t.lastKey {
-		case "i", "a": // insert/append and enter instead of "o"
-			t.addAntipatternOccurrence(t.lastKey + currentKey)
+		case "i", "a": // insert/append and enter instead of "o"/"O"
+			patternName := t.lastKey + currentKey
+			t.addAntipatternOccurrence(patternName)
+			t.antipatterns[patternName].TotalKeypresses += 2
 		}
 	}
 
@@ -43,9 +47,16 @@ func (t *AntipatternTracker) Track(currentKey, currentMode string) {
 
 func (t *AntipatternTracker) checkConsecutiveKeys(currentKey string, maxAllowedRepeats int64) {
 	if t.lastKey == currentKey {
+		patternName := strings.Repeat(currentKey, int(maxAllowedRepeats)+1) + "+"
 		t.consecutiveKeyCount++
+
 		if t.consecutiveKeyCount == maxAllowedRepeats {
-			t.addAntipatternOccurrence(strings.Repeat(currentKey, int(maxAllowedRepeats)+1) + "+")
+			t.addAntipatternOccurrence(patternName)
+			t.antipatterns[patternName].TotalKeypresses += maxAllowedRepeats + 1
+		}
+
+		if t.consecutiveKeyCount > maxAllowedRepeats {
+			t.antipatterns[patternName].TotalKeypresses++
 		}
 	} else {
 		t.consecutiveKeyCount = 0
@@ -59,20 +70,25 @@ func (t *AntipatternTracker) checkNormalMode(currentKey string) {
 	case "d":
 		t.checkConsecutiveKeys(currentKey, 3)
 	case "i", "a", "o", "O":
+		patternName := t.lastKey + currentKey
 		if t.lastKey == "h" && currentKey == "a" {
-			t.addAntipatternOccurrence(t.lastKey + currentKey)
+			t.addAntipatternOccurrence(patternName)
+			t.antipatterns[patternName].TotalKeypresses += 2
 		}
 
 		if t.lastKey == "j" && currentKey == "O" {
-			t.addAntipatternOccurrence(t.lastKey + currentKey)
+			t.addAntipatternOccurrence(patternName)
+			t.antipatterns[patternName].TotalKeypresses += 2
 		}
 
 		if t.lastKey == "k" && currentKey == "o" {
-			t.addAntipatternOccurrence(t.lastKey + currentKey)
+			t.addAntipatternOccurrence(patternName)
+			t.antipatterns[patternName].TotalKeypresses += 2
 		}
 
 		if t.lastKey == "l" && currentKey == "i" {
-			t.addAntipatternOccurrence(t.lastKey + currentKey)
+			t.addAntipatternOccurrence(patternName)
+			t.antipatterns[patternName].TotalKeypresses += 2
 		}
 	}
 }
@@ -84,8 +100,9 @@ func (t AntipatternTracker) Antipatterns() map[string]*Antipattern {
 func (t *AntipatternTracker) addAntipatternOccurrence(currentKey string) {
 	if _, ok := t.antipatterns[currentKey]; !ok {
 		t.antipatterns[currentKey] = &Antipattern{
-			Key:   currentKey,
-			Count: 0,
+			Key:             currentKey,
+			Count:           0,
+			TotalKeypresses: 0,
 		}
 	}
 

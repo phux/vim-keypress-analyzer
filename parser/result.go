@@ -82,7 +82,9 @@ NextChild:
 
 func (r Result) SortedAntipatterns() []*Antipattern {
 	sorted := []*Antipattern{}
+
 	for _, repetition := range r.Antipatterns {
+		repetition.AverageKeypresses = float64(repetition.TotalKeypresses) / float64(repetition.Count)
 		sorted = append(sorted, repetition)
 	}
 

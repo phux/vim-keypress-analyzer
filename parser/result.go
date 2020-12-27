@@ -35,7 +35,7 @@ type SortedEntry struct {
 
 func (r Result) SortedModeCount() []*tree.Node {
 	rootChilds := r.ModeCount.Children()
-	total := r.TotalKeypresses(true)
+	total := r.TotalKeypresses([]string{})
 
 	for i := range rootChilds {
 		rootChilds[i].Share = float64(rootChilds[i].Count*100) / float64(total)
@@ -48,9 +48,9 @@ func (r Result) SortedModeCount() []*tree.Node {
 	return rootChilds
 }
 
-func (r Result) SortedKeyMap() []*tree.Node {
+func (r Result) SortedKeyMap(excludeModes []string) []*tree.Node {
 	rootChilds := r.KeyMap.Children()
-	total := r.TotalKeypresses(false)
+	total := r.TotalKeypresses(excludeModes)
 
 	for i := range rootChilds {
 		rootChilds[i].Share = float64(rootChilds[i].Count*100) / float64(total)
@@ -63,12 +63,15 @@ func (r Result) SortedKeyMap() []*tree.Node {
 	return rootChilds
 }
 
-func (r Result) TotalKeypresses(includeInsertMode bool) int64 {
+func (r Result) TotalKeypresses(excludeModes []string) int64 {
 	var total int64
 
+NextChild:
 	for _, child := range r.ModeCount.Children() {
-		if child.Identifier == InsertMode && !includeInsertMode {
-			continue
+		for _, excludeMode := range excludeModes {
+			if child.Identifier == excludeMode {
+				continue NextChild
+			}
 		}
 
 		total += int64(child.Count)

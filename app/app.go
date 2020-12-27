@@ -9,7 +9,7 @@ import (
 )
 
 type Parser interface {
-	Parse(log io.Reader) (*parser.Result, error)
+	Parse(log io.Reader, excludeModes []string) (*parser.Result, error)
 }
 
 type App struct {
@@ -17,11 +17,11 @@ type App struct {
 }
 
 type AnalyzerResult struct {
-	SortedModeCounts                 []*tree.Node
-	SortedKeyMap                     []*tree.Node
-	SortedAntipatterns               []*parser.Antipattern
-	TotalKeypresses                  int64
-	TotalKeypressesWithoutInsertMode int64
+	SortedModeCounts                    []*tree.Node
+	SortedKeyMap                        []*tree.Node
+	SortedAntipatterns                  []*parser.Antipattern
+	TotalKeypresses                     int64
+	TotalKeypressesWithoutExcludedModes int64
 }
 
 func NewApp(p Parser) App {
@@ -30,20 +30,28 @@ func NewApp(p Parser) App {
 	}
 }
 
-func (a App) Analyze(log io.Reader, limit int64) (AnalyzerResult, error) {
+func (a App) Analyze(log io.Reader, limit int64, excludeModes []string) (AnalyzerResult, error) {
 	analyzerResult := AnalyzerResult{}
 
-	parserResult, err := a.parser.Parse(log)
+	for _, mode := range excludeModes {
+		switch mode {
+		case parser.NormalMode, parser.InsertMode, parser.CommandMode, parser.VisualMode:
+		default:
+			return analyzerResult, errors.Errorf("invalid exclude-mode given: %s", mode)
+		}
+	}
+
+	parserResult, err := a.parser.Parse(log, excludeModes)
 	if err != nil {
 		return analyzerResult, errors.Wrap(err, "could not analyze vim log")
 	}
 
 	analyzerResult.SortedModeCounts = parserResult.SortedModeCount()
-	analyzerResult.TotalKeypresses = parserResult.TotalKeypresses(true)
+	analyzerResult.TotalKeypresses = parserResult.TotalKeypresses(nil)
 
-	analyzerResult.TotalKeypressesWithoutInsertMode = parserResult.TotalKeypresses(false)
+	analyzerResult.TotalKeypressesWithoutExcludedModes = parserResult.TotalKeypresses(excludeModes)
 
-	sortedKeyMap := parserResult.SortedKeyMap()
+	sortedKeyMap := parserResult.SortedKeyMap(excludeModes)
 	if limit > 0 && len(sortedKeyMap) > int(limit) {
 		sortedKeyMap = sortedKeyMap[0:limit]
 	}

@@ -194,7 +194,8 @@ func TestParser_Parse(t *testing.T) {
 
 			p := parser.NewParser(false)
 
-			got, err := p.Parse(tt.input)
+			excludeModes := []string{parser.InsertMode}
+			got, err := p.Parse(tt.input, excludeModes)
 			require.NoError(t, err)
 
 			require.EqualValues(t, tt.expectedKeyMap(), got.KeyMap)

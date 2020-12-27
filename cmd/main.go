@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/lensesio/tableprinter"
 	"github.com/phux/vimkeypressanalyzer/app"
@@ -33,6 +34,12 @@ func main() {
 			Usage:   "enable naive antipattern analysis",
 			Value:   false,
 		},
+		&cli.StringFlag{
+			Name:    "exclude-modes",
+			Aliases: []string{"e"},
+			Usage:   "exclude modes from keymap analysis, comma separated list",
+			Value:   parser.InsertMode,
+		},
 	}
 	cliApp := &cli.App{
 		Flags: flags,
@@ -51,8 +58,9 @@ func main() {
 			enableAntipatterns := c.Bool("enable-antipatterns")
 			parser := parser.NewParser(enableAntipatterns)
 			a := app.NewApp(parser)
+			excludeModes := strings.Split(c.String("exclude-modes"), ",")
 
-			result, err := a.Analyze(logContents, c.Int64("limit"))
+			result, err := a.Analyze(logContents, c.Int64("limit"), excludeModes)
 			if err != nil {
 				return errors.Wrapf(err, "cmd: failed to analyze %s", logfile)
 			}
@@ -69,15 +77,21 @@ func main() {
 
 			printer.Print(result.SortedModeCounts)
 
+			pluralS := ""
+			if len(excludeModes) > 1 {
+				pluralS = "s"
+			}
 			fmt.Printf(
-				"\nKey presses in non-INSERT modes (total: %d)\n",
-				result.TotalKeypressesWithoutInsertMode,
+				"\nKey presses excluding %s mode%s (total: %d)\n",
+				strings.Join(excludeModes, ","),
+				pluralS,
+				result.TotalKeypressesWithoutExcludedModes,
 			)
 
 			printer.Print(result.SortedKeyMap)
 
 			if enableAntipatterns {
-				fmt.Println("\nAntipatterns (naive approach)")
+				fmt.Println("\nFound Antipatterns")
 
 				if len(result.SortedAntipatterns) == 0 {
 					fmt.Println("no antipatterns found, good job :)")

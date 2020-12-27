@@ -45,11 +45,13 @@ func TestApp_Analyze(t *testing.T) {
 			a := app.NewApp(p)
 			input := strings.NewReader(tt.input)
 
-			result, err := a.Analyze(input, 0)
+			limit := int64(0)
+			excludeModes := []string{parser.InsertMode}
+			result, err := a.Analyze(input, limit, excludeModes)
 
 			require.NoError(t, err)
 			require.Equal(t, tt.expectedTotalCount, result.TotalKeypresses)
-			require.Equal(t, tt.expectedTotalCountWithoutInsert, result.TotalKeypressesWithoutInsertMode)
+			require.Equal(t, tt.expectedTotalCountWithoutInsert, result.TotalKeypressesWithoutExcludedModes)
 		})
 	}
 }

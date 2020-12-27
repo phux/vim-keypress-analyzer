@@ -77,7 +77,7 @@ func NewParser(enableAntipatterns bool) *Parser {
 	}
 }
 
-func (p *Parser) Parse(r io.Reader) (*Result, error) {
+func (p *Parser) Parse(r io.Reader, excludeModes []string) (*Result, error) {
 	raw, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not read input")
@@ -90,6 +90,7 @@ func (p *Parser) Parse(r io.Reader) (*Result, error) {
 	sequenceTracker := &SequenceTracker{}
 	antipatternTracker := NewAntipatternTracker()
 
+NextKey:
 	for _, r := range input {
 		if sequenceTracker.IsActive(r) {
 			continue
@@ -106,19 +107,21 @@ func (p *Parser) Parse(r io.Reader) (*Result, error) {
 
 		currentMode := p.currentMode
 
-		if p.enableAntipatterns {
-			antipatternTracker.Track(currentKey, currentMode)
-		}
-
 		modeCountNode.AddOrIncrementChild(currentMode)
 		p.setNewMode(currentKey)
 
-		// either we were not in insert mode
-		// OR
-		// we escaped from insert mode with the current key
-		if currentMode != InsertMode {
-			keymapNode.AddOrIncrementChild(currentKey)
-			p.previousKey = currentKey
+		p.previousKey = currentKey
+
+		for _, excludeMode := range excludeModes {
+			if currentMode == excludeMode {
+				continue NextKey
+			}
+		}
+
+		keymapNode.AddOrIncrementChild(currentKey)
+
+		if p.enableAntipatterns {
+			antipatternTracker.Track(currentKey, currentMode)
 		}
 	}
 

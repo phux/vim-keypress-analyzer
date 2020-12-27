@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
+	"github.com/lensesio/tableprinter"
 	"github.com/phux/vimkeypressanalyzer/app"
 	"github.com/phux/vimkeypressanalyzer/parser"
 	"github.com/pkg/errors"
@@ -42,7 +44,31 @@ func main() {
 			parser := parser.NewParser()
 			a := app.NewApp(parser)
 
-			return a.Analyze(logContents, c.Int64("limit"))
+			result, err := a.Analyze(logContents, c.Int64("limit"))
+			if err != nil {
+				return errors.Wrapf(err, "cmd: failed to analyze %s", logfile)
+			}
+
+			fmt.Printf("\nVim Keypress Analyzer\n\n")
+
+			printer := tableprinter.New(os.Stdout)
+			printer.BorderTop, printer.BorderBottom, printer.BorderLeft, printer.BorderRight = true, true, true, true
+			printer.CenterSeparator = "│"
+			printer.ColumnSeparator = "│"
+			printer.RowSeparator = "─"
+
+			fmt.Printf("Key presses per mode (total: %d)\n", result.TotalKeypresses)
+
+			printer.Print(result.SortedModeCounts)
+
+			fmt.Printf(
+				"\nKey presses in non-INSERT modes (total: %d)\n",
+				result.TotalKeypressesWithoutInsertMode,
+			)
+
+			printer.Print(result.SortedKeyMap)
+
+			return nil
 		},
 	}
 

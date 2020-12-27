@@ -11,32 +11,25 @@ import (
 )
 
 func TestParser_Parse(t *testing.T) {
-	type args struct {
-		input io.Reader
-	}
-
 	tests := []struct {
-		args              args
+		input             io.Reader
 		expectedKeyMap    func() *tree.Node
 		expectedModeCount func() *tree.Node
 		name              string
-		wantErr           bool
 	}{
 		{
-			name: "empty key log",
+			name:  "empty key log",
+			input: strings.NewReader(""),
 			expectedKeyMap: func() *tree.Node {
 				return tree.NewNode("")
 			},
 			expectedModeCount: func() *tree.Node {
 				return tree.NewNode("")
 			},
-			args: args{
-				input: strings.NewReader(""),
-			},
-			wantErr: false,
 		},
 		{
-			name: "single key",
+			name:  "single key",
+			input: strings.NewReader("j"),
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
 				addChildWithCount(rootNode, "j", 1)
@@ -49,13 +42,10 @@ func TestParser_Parse(t *testing.T) {
 
 				return rootNode
 			},
-			args: args{
-				input: strings.NewReader("j"),
-			},
-			wantErr: false,
 		},
 		{
-			name: "repeating the same key",
+			name:  "repeating the same key",
+			input: strings.NewReader("jj"),
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
 				addChildWithCount(rootNode, "j", 2)
@@ -68,13 +58,10 @@ func TestParser_Parse(t *testing.T) {
 
 				return rootNode
 			},
-			args: args{
-				input: strings.NewReader("jj"),
-			},
-			wantErr: false,
 		},
 		{
-			name: "escape key",
+			name:  "escape key",
+			input: strings.NewReader(string(parser.CharEsc)),
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
 				addChildWithCount(rootNode, parser.CharReadableEsc, 1)
@@ -87,13 +74,10 @@ func TestParser_Parse(t *testing.T) {
 
 				return rootNode
 			},
-			args: args{
-				input: strings.NewReader(string(parser.CharEsc)),
-			},
-			wantErr: false,
 		},
 		{
-			name: "i<esc>",
+			name:  "i<esc>",
+			input: strings.NewReader("i" + string(parser.CharEsc)),
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
 				addChildWithCount(rootNode, "i", 1)
@@ -107,13 +91,10 @@ func TestParser_Parse(t *testing.T) {
 
 				return rootNode
 			},
-			args: args{
-				input: strings.NewReader("i" + string(parser.CharEsc)),
-			},
-			wantErr: false,
 		},
 		{
-			name: "ji<esc>j",
+			name:  "ji<esc>j",
+			input: strings.NewReader("ji" + string(parser.CharEsc) + "j"),
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
 				addChildWithCount(rootNode, "j", 2)
@@ -128,13 +109,10 @@ func TestParser_Parse(t *testing.T) {
 
 				return rootNode
 			},
-			args: args{
-				input: strings.NewReader("ji" + string(parser.CharEsc) + "j"),
-			},
-			wantErr: false,
 		},
 		{
-			name: "going twice into command mode",
+			name:  "going twice into command mode",
+			input: strings.NewReader("::"),
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
 				addChildWithCount(rootNode, ":", 2)
@@ -148,13 +126,10 @@ func TestParser_Parse(t *testing.T) {
 
 				return rootNode
 			},
-			args: args{
-				input: strings.NewReader("::"),
-			},
-			wantErr: false,
 		},
 		{
-			name: "going into insert mode via cc",
+			name:  "going into insert mode via cc",
+			input: strings.NewReader("ccc"),
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
 				addChildWithCount(rootNode, "c", 2)
@@ -168,13 +143,10 @@ func TestParser_Parse(t *testing.T) {
 
 				return rootNode
 			},
-			args: args{
-				input: strings.NewReader("ccc"),
-			},
-			wantErr: false,
 		},
 		{
-			name: "going into insert mode via C",
+			name:  "going into insert mode via C",
+			input: strings.NewReader("C" + string(parser.CharEsc) + "c"),
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
 				addChildWithCount(rootNode, "C", 1)
@@ -189,13 +161,10 @@ func TestParser_Parse(t *testing.T) {
 
 				return rootNode
 			},
-			args: args{
-				input: strings.NewReader("C" + string(parser.CharEsc) + "c"),
-			},
-			wantErr: false,
 		},
 		{
-			name: "visual mode",
+			name:  "visual mode",
+			input: strings.NewReader("Vj" + string(parser.CharEsc) + "vG"),
 			expectedKeyMap: func() *tree.Node {
 				rootNode := tree.NewNode("")
 				addChildWithCount(rootNode, "V", 1)
@@ -213,10 +182,6 @@ func TestParser_Parse(t *testing.T) {
 
 				return rootNode
 			},
-			args: args{
-				input: strings.NewReader("Vj" + string(parser.CharEsc) + "vG"),
-			},
-			wantErr: false,
 		},
 	}
 
@@ -226,12 +191,10 @@ func TestParser_Parse(t *testing.T) {
 			t.Parallel()
 
 			p := parser.NewParser()
-			got, err := p.Parse(tt.args.input)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Parser.Parse() error = %v, wantErr %v", err, tt.wantErr)
 
-				return
-			}
+			got, err := p.Parse(tt.input)
+			require.NoError(t, err)
+
 			expectedResult := &parser.Result{
 				KeyMap:    tt.expectedKeyMap(),
 				ModeCount: tt.expectedModeCount(),

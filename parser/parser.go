@@ -27,7 +27,7 @@ const (
 	CharReadableCV        = "<c-v>"
 	CharTab               = '\x09'
 	CharReadableTab       = "<tab>"
-	CharBackspace         = '\x08'
+	CharBackspace         = '\b'
 	CharReadableBackspace = "<bs>"
 )
 
@@ -85,9 +85,22 @@ func (p *Parser) Parse(r io.Reader) (*Result, error) {
 	result := NewResult()
 	keymapNode := tree.NewNode("")
 	modeCountNode := tree.NewNode("")
+	sequenceTracker := &SequenceTracker{}
 
 	for _, r := range input {
-		currentKey := toReadable(r)
+		if sequenceTracker.IsActive(r) {
+			continue
+		}
+
+		var currentKey string
+		if sequenceTracker.Found() {
+			currentKey = sequenceTracker.CurrentSequence(toReadable(r))
+		} else {
+			currentKey = toReadable(r)
+		}
+
+		sequenceTracker.Reset()
+
 		currentMode := p.currentMode
 		modeCountNode.AddOrIncrementChild(currentMode)
 		p.setNewMode(currentKey)

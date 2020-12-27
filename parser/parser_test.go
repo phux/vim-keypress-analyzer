@@ -11,6 +11,8 @@ import (
 )
 
 func TestParser_Parse(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		input             io.Reader
 		expectedKeyMap    func() *tree.Node
@@ -195,11 +197,8 @@ func TestParser_Parse(t *testing.T) {
 			got, err := p.Parse(tt.input)
 			require.NoError(t, err)
 
-			expectedResult := &parser.Result{
-				KeyMap:    tt.expectedKeyMap(),
-				ModeCount: tt.expectedModeCount(),
-			}
-			require.EqualValues(t, expectedResult, got)
+			require.EqualValues(t, tt.expectedKeyMap(), got.KeyMap)
+			require.EqualValues(t, tt.expectedModeCount(), got.ModeCount)
 		})
 	}
 }

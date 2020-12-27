@@ -68,6 +68,13 @@ func main() {
 
 			printer.Print(result.SortedKeyMap)
 
+			fmt.Println("\nAntipatterns (naive approach)")
+
+			if len(result.SortedAntipatterns) == 0 {
+				fmt.Println("no antipatterns found, good job :)")
+			}
+			printer.Print(result.SortedAntipatterns)
+
 			return nil
 		},
 	}

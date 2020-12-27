@@ -8,6 +8,8 @@ import (
 )
 
 func TestNode_AddOrIncrementChild(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name         string
 		existingNode *tree.Node

@@ -86,6 +86,7 @@ func (p *Parser) Parse(r io.Reader) (*Result, error) {
 	keymapNode := tree.NewNode("")
 	modeCountNode := tree.NewNode("")
 	sequenceTracker := &SequenceTracker{}
+	antipatternTracker := NewAntipatternTracker()
 
 	for _, r := range input {
 		if sequenceTracker.IsActive(r) {
@@ -102,6 +103,9 @@ func (p *Parser) Parse(r io.Reader) (*Result, error) {
 		sequenceTracker.Reset()
 
 		currentMode := p.currentMode
+
+		antipatternTracker.Track(currentKey, currentMode)
+
 		modeCountNode.AddOrIncrementChild(currentMode)
 		p.setNewMode(currentKey)
 
@@ -116,6 +120,7 @@ func (p *Parser) Parse(r io.Reader) (*Result, error) {
 
 	result.KeyMap = keymapNode
 	result.ModeCount = modeCountNode
+	result.Antipatterns = antipatternTracker.Repetitions()
 
 	return result, nil
 }

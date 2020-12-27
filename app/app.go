@@ -19,6 +19,7 @@ type App struct {
 type AnalyzerResult struct {
 	SortedModeCounts                 []*tree.Node
 	SortedKeyMap                     []*tree.Node
+	SortedAntipatterns               []*parser.Repetition
 	TotalKeypresses                  int64
 	TotalKeypressesWithoutInsertMode int64
 }
@@ -48,6 +49,8 @@ func (a App) Analyze(log io.Reader, limit int64) (AnalyzerResult, error) {
 	}
 
 	analyzerResult.SortedKeyMap = sortedKeyMap
+
+	analyzerResult.SortedAntipatterns = parserResult.SortedAntipatterns()
 
 	return analyzerResult, nil
 }

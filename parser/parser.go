@@ -65,13 +65,15 @@ var controlCodeToHumanReadable = map[rune]string{
 }
 
 type Parser struct {
-	currentMode string
-	previousKey string
+	currentMode        string
+	previousKey        string
+	enableAntipatterns bool
 }
 
-func NewParser() *Parser {
+func NewParser(enableAntipatterns bool) *Parser {
 	return &Parser{
-		currentMode: NormalMode,
+		enableAntipatterns: enableAntipatterns,
+		currentMode:        NormalMode,
 	}
 }
 
@@ -104,7 +106,9 @@ func (p *Parser) Parse(r io.Reader) (*Result, error) {
 
 		currentMode := p.currentMode
 
-		antipatternTracker.Track(currentKey, currentMode)
+		if p.enableAntipatterns {
+			antipatternTracker.Track(currentKey, currentMode)
+		}
 
 		modeCountNode.AddOrIncrementChild(currentMode)
 		p.setNewMode(currentKey)
@@ -120,7 +124,7 @@ func (p *Parser) Parse(r io.Reader) (*Result, error) {
 
 	result.KeyMap = keymapNode
 	result.ModeCount = modeCountNode
-	result.Antipatterns = antipatternTracker.Repetitions()
+	result.Antipatterns = antipatternTracker.Antipatterns()
 
 	return result, nil
 }

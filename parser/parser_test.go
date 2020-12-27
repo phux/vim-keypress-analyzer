@@ -192,7 +192,7 @@ func TestParser_Parse(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			p := parser.NewParser()
+			p := parser.NewParser(false)
 
 			got, err := p.Parse(tt.input)
 			require.NoError(t, err)

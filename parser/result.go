@@ -9,7 +9,7 @@ import (
 type Result struct {
 	KeyMap       *tree.Node
 	ModeCount    *tree.Node
-	Antipatterns map[string]*Repetition
+	Antipatterns map[string]*Antipattern
 }
 
 func NewResult() *Result {
@@ -77,8 +77,8 @@ func (r Result) TotalKeypresses(includeInsertMode bool) int64 {
 	return total
 }
 
-func (r Result) SortedAntipatterns() []*Repetition {
-	sorted := []*Repetition{}
+func (r Result) SortedAntipatterns() []*Antipattern {
+	sorted := []*Antipattern{}
 	for _, repetition := range r.Antipatterns {
 		sorted = append(sorted, repetition)
 	}

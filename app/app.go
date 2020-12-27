@@ -19,7 +19,7 @@ type App struct {
 type AnalyzerResult struct {
 	SortedModeCounts                 []*tree.Node
 	SortedKeyMap                     []*tree.Node
-	SortedAntipatterns               []*parser.Repetition
+	SortedAntipatterns               []*parser.Antipattern
 	TotalKeypresses                  int64
 	TotalKeypressesWithoutInsertMode int64
 }

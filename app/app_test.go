@@ -41,7 +41,7 @@ func TestApp_Analyze(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			p := parser.NewParser()
+			p := parser.NewParser(false)
 			a := app.NewApp(p)
 			input := strings.NewReader(tt.input)
 

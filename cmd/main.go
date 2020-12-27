@@ -27,6 +27,12 @@ func main() {
 			Usage:   "number of most frequent keys to show",
 			Value:   0,
 		},
+		&cli.BoolFlag{
+			Name:    "enable-antipatterns",
+			Aliases: []string{"a"},
+			Usage:   "enable naive antipattern analysis",
+			Value:   false,
+		},
 	}
 	cliApp := &cli.App{
 		Flags: flags,
@@ -41,7 +47,9 @@ func main() {
 			if err != nil {
 				return errors.Wrapf(err, "could not open logfile '%s'", logfile)
 			}
-			parser := parser.NewParser()
+
+			enableAntipatterns := c.Bool("enable-antipatterns")
+			parser := parser.NewParser(enableAntipatterns)
 			a := app.NewApp(parser)
 
 			result, err := a.Analyze(logContents, c.Int64("limit"))
@@ -68,12 +76,14 @@ func main() {
 
 			printer.Print(result.SortedKeyMap)
 
-			fmt.Println("\nAntipatterns (naive approach)")
+			if enableAntipatterns {
+				fmt.Println("\nAntipatterns (naive approach)")
 
-			if len(result.SortedAntipatterns) == 0 {
-				fmt.Println("no antipatterns found, good job :)")
+				if len(result.SortedAntipatterns) == 0 {
+					fmt.Println("no antipatterns found, good job :)")
+				}
+				printer.Print(result.SortedAntipatterns)
 			}
-			printer.Print(result.SortedAntipatterns)
 
 			return nil
 		},

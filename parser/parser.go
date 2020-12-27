@@ -83,24 +83,26 @@ func (p *Parser) Parse(r io.Reader) (*Result, error) {
 
 	input := string(raw)
 	result := NewResult()
-	rootNode := tree.NewNode("")
+	keymapNode := tree.NewNode("")
+	modeCountNode := tree.NewNode("")
 
 	for _, r := range input {
 		currentKey := toReadable(r)
 		currentMode := p.currentMode
-		result.IncrModeCount(currentMode)
+		modeCountNode.AddOrIncrementChild(currentMode)
 		p.setNewMode(currentKey)
 
 		// either we were not in insert mode
 		// OR
 		// we escaped from insert mode with the current key
 		if currentMode != InsertMode {
-			rootNode.AddOrIncrementChild(currentKey)
+			keymapNode.AddOrIncrementChild(currentKey)
 			p.previousKey = currentKey
 		}
 	}
 
-	result.KeyMap = rootNode
+	result.KeyMap = keymapNode
+	result.ModeCount = modeCountNode
 
 	return result, nil
 }

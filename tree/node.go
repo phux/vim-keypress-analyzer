@@ -1,16 +1,16 @@
 package tree
 
 type Node struct {
-	Key      string `header:"key"`
-	children []*Node
-	Count    int     `header:"count"`
-	Share    float64 `header:"share (%)"`
+	Identifier string `header:"identifier"`
+	children   []*Node
+	Count      int     `header:"count"`
+	Share      float64 `header:"share (%)"`
 }
 
 func NewNode(key string) *Node {
 	return &Node{
-		Key:      key,
-		children: []*Node{},
+		Identifier: key,
+		children:   []*Node{},
 	}
 }
 
@@ -32,7 +32,7 @@ func findIndexByKey(n *Node, key string) int {
 	index := -1
 
 	for i := range n.children {
-		if n.children[i].Key == key {
+		if n.children[i].Identifier == key {
 			return i
 		}
 	}

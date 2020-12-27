@@ -38,7 +38,7 @@ func (a App) Analyze(log io.Reader, limit int64) error {
 	printer.ColumnSeparator = "│"
 	printer.RowSeparator = "─"
 
-	sortedModeCounts := result.SortedModeCounts()
+	sortedModeCounts := result.SortedModeCount()
 
 	totalSum := result.TotalKeypresses(true)
 

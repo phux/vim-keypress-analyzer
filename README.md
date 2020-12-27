@@ -76,7 +76,7 @@ Antipatterns (naive approach)
 
 ### Binary from GitHub release
 
-1. Download the archive for your OS from the [releases page](https://github.com/phux/vim-keypress-analyzer/releases)
+1. Download the archive for your OS (OSX and Linux, OSX is not tested yet) from the [releases page](https://github.com/phux/vim-keypress-analyzer/releases)
 1. Extract the binary `vim-keypress-analyzer` to a directory in your `$PATH`
 
 ## Collecting keypresses in vim/nvim

@@ -1,14 +1,19 @@
 package parser
 
+import "strings"
+
 type AntipatternTracker struct {
-	antipatterns map[string]*Antipattern
-	lastKey      string
-	lastMode     string
+	antipatterns        map[string]*Antipattern
+	lastKey             string
+	lastMode            string
+	consecutiveKeyCount int64
+	maxAllowedRepeats   int64
 }
 
-func NewAntipatternTracker() *AntipatternTracker {
+func NewAntipatternTracker(maxAllowedRepeats int64) *AntipatternTracker {
 	return &AntipatternTracker{
-		antipatterns: map[string]*Antipattern{},
+		antipatterns:      map[string]*Antipattern{},
+		maxAllowedRepeats: maxAllowedRepeats,
 	}
 }
 
@@ -19,15 +24,40 @@ type Antipattern struct {
 
 func (t *AntipatternTracker) Track(currentKey, currentMode string) {
 	// TODO: double key patterns: dddd instead of dj
-	switch currentKey {
-	case "h", "j", "k", "l", "b", "B", "w", "W", "e", "E":
-		if currentMode != NormalMode {
-			break
-		}
+	if currentMode != NormalMode && currentMode != VisualMode {
+		t.consecutiveKeyCount = 0
+	} else {
+		t.checkNormalMode(currentKey)
+	}
 
-		if t.lastKey == currentKey {
+	if currentMode == InsertMode && t.lastMode != InsertMode && currentKey == "<cr>" {
+		switch t.lastKey {
+		case "i", "a": // insert/append and enter instead of "o"
 			t.addAntipatternOccurrence(t.lastKey + currentKey)
 		}
+	}
+
+	t.lastKey = currentKey
+	t.lastMode = currentMode
+}
+
+func (t *AntipatternTracker) checkConsecutiveKeys(currentKey string, maxAllowedRepeats int64) {
+	if t.lastKey == currentKey {
+		t.consecutiveKeyCount++
+		if t.consecutiveKeyCount == maxAllowedRepeats {
+			t.addAntipatternOccurrence(strings.Repeat(currentKey, int(maxAllowedRepeats)+1) + "+")
+		}
+	} else {
+		t.consecutiveKeyCount = 0
+	}
+}
+
+func (t *AntipatternTracker) checkNormalMode(currentKey string) {
+	switch currentKey {
+	case "h", "j", "k", "l", "b", "B", "w", "W", "e", "E", "x", "X":
+		t.checkConsecutiveKeys(currentKey, t.maxAllowedRepeats)
+	case "d":
+		t.checkConsecutiveKeys(currentKey, 3)
 	case "i", "a", "o", "O":
 		if t.lastKey == "h" && currentKey == "a" {
 			t.addAntipatternOccurrence(t.lastKey + currentKey)
@@ -44,17 +74,7 @@ func (t *AntipatternTracker) Track(currentKey, currentMode string) {
 		if t.lastKey == "l" && currentKey == "i" {
 			t.addAntipatternOccurrence(t.lastKey + currentKey)
 		}
-	case "<cr>":
-		if currentMode == InsertMode && t.lastMode != InsertMode {
-			switch t.lastKey {
-			case "i", "a": // insert/append and enter instead of "o"
-				t.addAntipatternOccurrence(t.lastKey + currentKey)
-			}
-		}
 	}
-
-	t.lastKey = currentKey
-	t.lastMode = currentMode
 }
 
 func (t AntipatternTracker) Antipatterns() map[string]*Antipattern {

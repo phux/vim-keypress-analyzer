@@ -88,7 +88,9 @@ func (p *Parser) Parse(r io.Reader, excludeModes []string) (*Result, error) {
 	keymapNode := tree.NewNode("")
 	modeCountNode := tree.NewNode("")
 	sequenceTracker := &SequenceTracker{}
-	antipatternTracker := NewAntipatternTracker()
+
+	maxAllowedRepeats := int64(2)
+	antipatternTracker := NewAntipatternTracker(maxAllowedRepeats)
 
 NextKey:
 	for _, r := range input {

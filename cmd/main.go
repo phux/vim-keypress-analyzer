@@ -13,6 +13,8 @@ import (
 	cli "github.com/urfave/cli/v2"
 )
 
+var version string
+
 func main() {
 	flags := []cli.Flag{
 		&cli.StringFlag{
@@ -42,9 +44,10 @@ func main() {
 		},
 	}
 	cliApp := &cli.App{
-		Flags: flags,
-		Name:  "Vim Keypress Analyzer",
-		Usage: "parse the pressed keys in vim and give a helpful analysis",
+		Flags:   flags,
+		Name:    "Vim Keypress Analyzer",
+		Usage:   "parse the pressed keys in vim and give a helpful analysis",
+		Version: version,
 		Action: func(c *cli.Context) error {
 			logfile := c.String("file")
 			if logfile == "" {

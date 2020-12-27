@@ -28,7 +28,7 @@ const (
 	CharTab               = '\x09'
 	CharReadableTab       = "<tab>"
 	CharBackspace         = '\x08'
-	CharReadableBackspace = "<bs"
+	CharReadableBackspace = "<bs>"
 )
 
 var controlCodeToHumanReadable = map[rune]string{

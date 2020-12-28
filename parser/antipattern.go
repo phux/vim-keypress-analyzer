@@ -34,7 +34,7 @@ func (t *AntipatternTracker) Track(currentKey, currentMode string) {
 
 	if currentMode == InsertMode && t.lastMode != InsertMode && currentKey == "<cr>" {
 		switch t.lastKey {
-		case "i", "a": // insert/append and enter instead of "o"/"O"
+		case "I", "A": // insert/append and enter instead of "o"/"O"
 			patternName := t.lastKey + currentKey
 			t.addAntipatternOccurrence(patternName)
 			t.antipatterns[patternName].TotalKeypresses += 2

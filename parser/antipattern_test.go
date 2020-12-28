@@ -189,12 +189,12 @@ func TestAntipatternTracker_Track_InsertMode(t *testing.T) {
 		{
 			name: "insert and enter",
 			keys: []params{
-				{key: "i", currentMode: parser.NormalMode},
+				{key: "I", currentMode: parser.NormalMode},
 				{key: "<cr>", currentMode: parser.InsertMode},
 			},
 			expectedAntipatterns: map[string]*parser.Antipattern{
-				"i<cr>": {
-					Key:             "i<cr>",
+				"I<cr>": {
+					Key:             "I<cr>",
 					Count:           1,
 					TotalKeypresses: 2,
 				},
@@ -203,21 +203,21 @@ func TestAntipatternTracker_Track_InsertMode(t *testing.T) {
 		{
 			name: "append and enter",
 			keys: []params{
-				{key: "a", currentMode: parser.NormalMode},
+				{key: "A", currentMode: parser.NormalMode},
 				{key: "<cr>", currentMode: parser.InsertMode},
 			},
 			expectedAntipatterns: map[string]*parser.Antipattern{
-				"a<cr>": {
-					Key:             "a<cr>",
+				"A<cr>": {
+					Key:             "A<cr>",
 					Count:           1,
 					TotalKeypresses: 2,
 				},
 			},
 		},
 		{
-			name: "pressing a<cr> already in insert mode",
+			name: "pressing A<cr> already in insert mode",
 			keys: []params{
-				{key: "a", currentMode: parser.InsertMode},
+				{key: "A", currentMode: parser.InsertMode},
 				{key: "<cr>", currentMode: parser.InsertMode},
 			},
 			expectedAntipatterns: map[string]*parser.Antipattern{},

@@ -40,7 +40,7 @@ func main() {
 			Name:    "exclude-modes",
 			Aliases: []string{"e"},
 			Usage:   "exclude modes from keymap analysis, comma separated list",
-			Value:   parser.InsertMode,
+			Value:   parser.InsertMode + "," + parser.CommandMode,
 		},
 	}
 	cliApp := &cli.App{
@@ -85,8 +85,8 @@ func main() {
 				pluralS = "s"
 			}
 			fmt.Printf(
-				"\nKey presses excluding %s mode%s (total: %d)\n",
-				strings.Join(excludeModes, ","),
+				"\nKey presses excluding [%s] mode%s (total: %d)\n",
+				strings.Join(excludeModes, ", "),
 				pluralS,
 				result.TotalKeypressesWithoutExcludedModes,
 			)

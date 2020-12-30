@@ -47,49 +47,49 @@ $ vim-keypress-analyzer --file ~/.nvim_keylog --limit 10 --enable-antipatterns
 
 Vim Keypress Analyzer
 
-Key presses per mode (total: 34335)
+Key presses per mode (total: 74478)
 │─────────────────│───────│───────────│
 │ IDENTIFIER (4)  │ COUNT │ SHARE (%) │
 │─────────────────│───────│───────────│
-│ insert          │ 16.6K │     48.49 │
-│ normal          │ 13.3K │     38.82 │
-│ visual          │  3.5K │     10.43 │
-│ command         │   779 │      2.27 │
+│ insert          │ 34.5K │     46.40 │
+│ normal          │ 28.4K │     37.66 │
+│ visual          │  7.6K │     10.24 │
+│ command         │  4.2K │      5.71 │
 │─────────────────│───────│───────────│
 
-Key presses excluding insert mode (total: 17687)
+Key presses excluding [insert, command] modes (total: 35672)
 │──────────────────│───────│───────────│
 │ IDENTIFIER (10)  │ COUNT │ SHARE (%) │
 │──────────────────│───────│───────────│
-│ w                │  2.7K │     15.76 │
-│ <space>          │  1.5K │      8.68 │
-│ j                │  1.1K │      6.43 │
-│ k                │   948 │      5.36 │
-│ b                │   903 │      5.11 │
-│ d                │   604 │      3.41 │
-│ e                │   509 │      2.88 │
-│ c                │   463 │      2.62 │
-│ i                │   454 │      2.57 │
-│ o                │   426 │      2.41 │
+│ w                │  5.3K │     14.94 │
+│ <space>          │  3.2K │      9.21 │
+│ j                │  2.3K │      6.46 │
+│ k                │  1.9K │      5.34 │
+│ b                │  1.7K │      4.96 │
+│ d                │  1.1K │      3.21 │
+│ e                │  1.2K │      2.86 │
+│ <esc>            │  1.0K │      2.80 │
+│ i                │   917 │      2.57 │
+│ c                │   902 │      2.53 │
 │──────────────────│───────│───────────│
 
 Found Antipatterns
 │───────────────│───────│───────────────────│─────────────────────────│
 │ PATTERN (15)  │ COUNT │ TOTAL KEY PRESSES │ AVG KEYS PER OCCURRENCE │
 │───────────────│───────│───────────────────│─────────────────────────│
-│ www+          │   234 │              1.2K │ 5.22                    │
-│ bbb+          │   112 │               518 │ 4.62                    │
-│ ko            │    96 │               192 │ 2.00                    │
-│ li            │    63 │               126 │ 2.00                    │
-│ kkk+          │    42 │               189 │ 4.50                    │
-│ jjj+          │    42 │               181 │ 4.31                    │
-│ eee+          │    41 │               220 │ 5.37                    │
-│ jO            │    24 │                48 │ 2.00                    │
-│ hhh+          │    13 │                77 │ 5.92                    │
-│ lll+          │    12 │                70 │ 5.83                    │
-│ dddd+         │    11 │                46 │ 4.18                    │
-│ xxx+          │     9 │                44 │ 4.89                    │
-│ ha            │     4 │                 8 │ 2.00                    │
+│ www+          │   427 │              2.2K │ 5.33                    │
+│ bbb+          │   234 │              1.8K │ 4.63                    │
+│ ko            │   153 │               306 │ 2.00                    │
+│ li            │   110 │               220 │ 2.00                    │
+│ jjj+          │    86 │               389 │ 4.52                    │
+│ eee+          │    82 │               426 │ 5.20                    │
+│ kkk+          │    80 │               357 │ 4.46                    │
+│ jO            │    42 │                84 │ 2.00                    │
+│ xxx+          │    23 │                91 │ 3.96                    │
+│ hhh+          │    20 │               105 │ 5.25                    │
+│ lll+          │    19 │               127 │ 6.68                    │
+│ dddd+         │    17 │                74 │ 4.35                    │
+│ ha            │     9 │                18 │ 2.00                    │
 │ XXX+          │     1 │                 6 │ 6.00                    │
 │ BBB+          │     1 │                 3 │ 3.00                    │
 │───────────────│───────│───────────────────│─────────────────────────│
@@ -140,8 +140,8 @@ $ vim-keypress-analyzer -f <a_log_file>
 
 ### Optional flags
 
-| Flag                          | Description                                                          | Possible values              | Default         |
-|-------------------------------|----------------------------------------------------------------------|------------------------------|-----------------|
-| `-l`, `--limit`               | limit the number of key presses displayed                            | any positive int             | `0` (unlimited) |
-| `-a`, `--enable-antipatterns` | boolean flag, enable a rudimentary antipattern analysis              | flag is present or not       | false           |
-| `-e`, `--exclude-modes`       | comma separated list of modes to be excluded from the key press list | insert,normal,command,visual | `insert`        |
+| Flag                          | Description                                                          | Possible values              | Default          |
+|-------------------------------|----------------------------------------------------------------------|------------------------------|------------------|
+| `-l`, `--limit`               | limit the number of key presses displayed                            | any positive int             | `0` (unlimited)  |
+| `-a`, `--enable-antipatterns` | boolean flag, enable a rudimentary antipattern analysis              | flag is present or not       | false            |
+| `-e`, `--exclude-modes`       | comma separated list of modes to be excluded from the key press list | insert,normal,command,visual | `insert,command` |

@@ -37,6 +37,8 @@
 
 ### TODO
 
+- [ ] rewrite antipattern detection [WIP]
+  - [ ] configurable via yaml file 
 - [ ] (maybe) `<leader><key>` detection?
 - [ ] (maybe maybe) build a vim plugin that logs keys on the fly to a structured log format
 

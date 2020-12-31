@@ -191,6 +191,7 @@ func (p *Parser) setNewMode(currentKey string) {
 			p.currentMode = CommandMode
 		}
 	case "v", "V", CharReadableCV:
+		// TODO:  needs leader key detection, otherwise <leader>v counts as entering visual mode
 		switch p.currentMode {
 		case NormalMode:
 			p.currentMode = VisualMode

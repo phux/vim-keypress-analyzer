@@ -119,6 +119,9 @@ alias v='vim -w ~/.vim_logs/$(date -Idate).log "$@"'
 ```
 
 ### Analyzing logfiles
+
+There is only a single mandatory option: `-f`\`--file` to the log file generated in the previous step.
+
 ```sh
 $ vim-keypress-analyzer -f <a_log_file>
 ```

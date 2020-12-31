@@ -5,27 +5,71 @@
 
 ## Table of contents
 
-* [Motivation](#motivation)
-* [Features](#features)
-  * [TODO](#todo)
 * [Example output](#example-output)
+* [Features](#features)
 * [Install](#install)
   * [Binary from GitHub release](#binary-from-github-release)
 * [Usage](#usage)
   * [Collecting keypresses in vim/nvim](#collecting-keypresses-in-vim/nvim)
   * [Analyzing logfiles](#analyzing-logfiles)
   * [Optional flags](#optional-flags)
+* [Motivation](#motivation)
+* [TODO](#todo)
 
-## Motivation
+## Example output
 
-- be able to see the ratio of typing in `insert` mode vs. other modes
-  - if you are typing 99.9% of the time in `insert` mode, there is not much reason to use vim
-- count the characters you type in vim (e.g. per day)
-- identify your most pressed keys in non-insert modes, to check for example for
-  optimization potential
-- identify antipatterns in your editing habit. Antipatterns means repetitive or inefficient key strokes.
-  For example, pressing eight times `j` repetitively is considered an
-  antipattern. Similarly, pressing `A<cr>` can be done as well by `o`
+```sh
+$ vim-keypress-analyzer --file ~/.nvim_keylog --limit 10 --enable-antipatterns
+
+Vim Keypress Analyzer
+
+Key presses per mode (total: 82841)
+│─────────────────│───────│───────────│
+│ IDENTIFIER (4)  │ COUNT │ SHARE (%) │
+│─────────────────│───────│───────────│
+│ insert          │ 37.4K │     45.24 │
+│ normal          │ 32.4K │     39.14 │
+│ visual          │  8.5K │     10.27 │
+│ command         │  4.4K │      5.35 │
+│─────────────────│───────│───────────│
+
+Key presses excluding [insert, command] modes (total: 40935)
+│──────────────────│───────│───────────│
+│ IDENTIFIER (10)  │ COUNT │ SHARE (%) │
+│──────────────────│───────│───────────│
+│ w                │  5.9K │     14.43 │
+│ <space>          │  3.6K │      8.83 │
+│ j                │  2.6K │      6.55 │
+│ k                │  2.2K │      5.45 │
+│ b                │  2.3K │      4.97 │
+│ d                │  1.2K │      3.15 │
+│ e                │  1.2K │      3.07 │
+│ <esc>            │  1.1K │      2.69 │
+│ i                │  1.7K │      2.63 │
+│ c                │  1.4K │      2.55 │
+│──────────────────│───────│───────────│
+
+Found Antipatterns
+│───────────────│───────│───────────────────│─────────────────────────│
+│ PATTERN (15)  │ COUNT │ TOTAL KEY PRESSES │ AVG KEYS PER OCCURRENCE │
+│───────────────│───────│───────────────────│─────────────────────────│
+│ www+          │   477 │              2.5K │ 5.29                    │
+│ bbb+          │   267 │              1.2K │ 4.73                    │
+│ ko            │   171 │               342 │ 2.00                    │
+│ li            │   120 │               240 │ 2.00                    │
+│ jjj+          │   104 │               473 │ 4.55                    │
+│ eee+          │   103 │               555 │ 5.39                    │
+│ kkk+          │    90 │               427 │ 4.74                    │
+│ jO            │    47 │                94 │ 2.00                    │
+│ xxx+          │    25 │                96 │ 3.84                    │
+│ hhh+          │    22 │               112 │ 5.09                    │
+│ dddd+         │    19 │                86 │ 4.53                    │
+│ lll+          │    19 │               127 │ 6.68                    │
+│ ha            │     8 │                16 │ 2.00                    │
+│ XXX+          │     1 │                 6 │ 6.00                    │
+│ BBB+          │     1 │                 3 │ 3.00                    │
+│───────────────│───────│───────────────────│─────────────────────────│
+```
 
 ## Features
 
@@ -35,68 +79,6 @@
 - [x] detect repetitive key sequences as antipatterns (e.g. `jjj` or `dddd`)
   - [ ] detect repetitive multi key sequences like `dwdwdwdw`
 
-### TODO
-
-- [ ] rewrite antipattern detection [WIP]
-  - [ ] configurable via yaml file
-- [ ] option to store results in a structured format (json e.g.)
-- [ ] (maybe) `<leader><key>` detection?
-- [ ] (maybe maybe) build a vim plugin that logs keys on the fly to a structured log format
-
-## Example output
-
-```sh
-$ vim-keypress-analyzer --file ~/.nvim_keylog --limit 10 --enable-antipatterns
-
-Vim Keypress Analyzer
-
-Key presses per mode (total: 74478)
-│─────────────────│───────│───────────│
-│ IDENTIFIER (4)  │ COUNT │ SHARE (%) │
-│─────────────────│───────│───────────│
-│ insert          │ 34.5K │     46.40 │
-│ normal          │ 28.4K │     37.66 │
-│ visual          │  7.6K │     10.24 │
-│ command         │  4.2K │      5.71 │
-│─────────────────│───────│───────────│
-
-Key presses excluding [insert, command] modes (total: 35672)
-│──────────────────│───────│───────────│
-│ IDENTIFIER (10)  │ COUNT │ SHARE (%) │
-│──────────────────│───────│───────────│
-│ w                │  5.3K │     14.94 │
-│ <space>          │  3.2K │      9.21 │
-│ j                │  2.3K │      6.46 │
-│ k                │  1.9K │      5.34 │
-│ b                │  1.7K │      4.96 │
-│ d                │  1.1K │      3.21 │
-│ e                │  1.2K │      2.86 │
-│ <esc>            │  1.0K │      2.80 │
-│ i                │   917 │      2.57 │
-│ c                │   902 │      2.53 │
-│──────────────────│───────│───────────│
-
-Found Antipatterns
-│───────────────│───────│───────────────────│─────────────────────────│
-│ PATTERN (15)  │ COUNT │ TOTAL KEY PRESSES │ AVG KEYS PER OCCURRENCE │
-│───────────────│───────│───────────────────│─────────────────────────│
-│ www+          │   427 │              2.2K │ 5.33                    │
-│ bbb+          │   234 │              1.8K │ 4.63                    │
-│ ko            │   153 │               306 │ 2.00                    │
-│ li            │   110 │               220 │ 2.00                    │
-│ jjj+          │    86 │               389 │ 4.52                    │
-│ eee+          │    82 │               426 │ 5.20                    │
-│ kkk+          │    80 │               357 │ 4.46                    │
-│ jO            │    42 │                84 │ 2.00                    │
-│ xxx+          │    23 │                91 │ 3.96                    │
-│ hhh+          │    20 │               105 │ 5.25                    │
-│ lll+          │    19 │               127 │ 6.68                    │
-│ dddd+         │    17 │                74 │ 4.35                    │
-│ ha            │     9 │                18 │ 2.00                    │
-│ XXX+          │     1 │                 6 │ 6.00                    │
-│ BBB+          │     1 │                 3 │ 3.00                    │
-│───────────────│───────│───────────────────│─────────────────────────│
-```
 
 ## Install
 
@@ -148,3 +130,22 @@ $ vim-keypress-analyzer -f <a_log_file>
 | `-l`, `--limit`               | limit the number of key presses displayed                            | any positive int             | `0` (unlimited)  |
 | `-a`, `--enable-antipatterns` | boolean flag, enable a rudimentary antipattern analysis              | flag is present or not       | false            |
 | `-e`, `--exclude-modes`       | comma separated list of modes to be excluded from the key press list | insert,normal,command,visual | `insert,command` |
+
+## Motivation
+
+- be able to see the ratio of typing in `insert` mode vs. other modes
+  - if you are typing 99.9% of the time in `insert` mode, there is not much reason to use vim
+- count the characters you type in vim (e.g. per day)
+- identify your most pressed keys in non-insert modes, to check for example for
+  optimization potential
+- identify antipatterns in your editing habit. Antipatterns means repetitive or inefficient key strokes.
+  For example, pressing eight times `j` repetitively is considered an
+  antipattern. Similarly, pressing `A<cr>` can be done as well by `o`
+
+## TODO
+
+- [ ] rewrite antipattern detection [WIP]
+  - [ ] configurable via yaml file
+- [ ] option to store results in a structured format (json e.g.)
+- [ ] (maybe) `<leader><key>` detection? - the numbers are otherwise not 100% correct
+- [ ] (maybe maybe) build a vim plugin that logs keys on the fly to a structured log format

@@ -185,6 +185,82 @@ func TestParser_Parse(t *testing.T) {
 				return rootNode
 			},
 		},
+		{
+			name:  "?/ disable insert triggers",
+			input: strings.NewReader("/iaIA" + string(parser.CharEsc) + "?iaIA"),
+			expectedKeyMap: func() *tree.Node {
+				rootNode := tree.NewNode("")
+				addChildWithCount(rootNode, "/", 1)
+				addChildWithCount(rootNode, "i", 2)
+				addChildWithCount(rootNode, "a", 2)
+				addChildWithCount(rootNode, "I", 2)
+				addChildWithCount(rootNode, "A", 2)
+				addChildWithCount(rootNode, parser.CharReadableEsc, 1)
+				addChildWithCount(rootNode, "?", 1)
+
+				return rootNode
+			},
+			expectedModeCount: func() *tree.Node {
+				rootNode := tree.NewNode("")
+				addChildWithCount(rootNode, parser.NormalMode, 11)
+
+				return rootNode
+			},
+		},
+		{
+			name:  "?/ in insert don't trigger search mode",
+			input: strings.NewReader("i/?"),
+			expectedKeyMap: func() *tree.Node {
+				rootNode := tree.NewNode("")
+				addChildWithCount(rootNode, "i", 1)
+
+				return rootNode
+			},
+			expectedModeCount: func() *tree.Node {
+				rootNode := tree.NewNode("")
+				addChildWithCount(rootNode, parser.NormalMode, 1)
+				addChildWithCount(rootNode, parser.InsertMode, 2)
+
+				return rootNode
+			},
+		},
+		{
+			name:  "fFtT prevent triggering insert mode",
+			input: strings.NewReader("fiFitiTi"),
+			expectedKeyMap: func() *tree.Node {
+				rootNode := tree.NewNode("")
+				addChildWithCount(rootNode, "f", 1)
+				addChildWithCount(rootNode, "i", 4)
+				addChildWithCount(rootNode, "F", 1)
+				addChildWithCount(rootNode, "t", 1)
+				addChildWithCount(rootNode, "T", 1)
+
+				return rootNode
+			},
+			expectedModeCount: func() *tree.Node {
+				rootNode := tree.NewNode("")
+				addChildWithCount(rootNode, parser.NormalMode, 8)
+
+				return rootNode
+			},
+		},
+		{
+			name:  "fFtT don't matter in insert mode",
+			input: strings.NewReader("ifFtT"),
+			expectedKeyMap: func() *tree.Node {
+				rootNode := tree.NewNode("")
+				addChildWithCount(rootNode, "i", 1)
+
+				return rootNode
+			},
+			expectedModeCount: func() *tree.Node {
+				rootNode := tree.NewNode("")
+				addChildWithCount(rootNode, parser.NormalMode, 1)
+				addChildWithCount(rootNode, parser.InsertMode, 4)
+
+				return rootNode
+			},
+		},
 	}
 
 	for _, tt := range tests {

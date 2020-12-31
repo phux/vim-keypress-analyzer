@@ -37,9 +37,6 @@
 
 ### TODO
 
-- [ ] fix mode detection when keys like `i` don't trigger insert mode - e.g. `fi`
-  - [ ] `fFtT/?`
-  - [ ] handle interruption with esc `f<esc>`
 - [ ] rewrite antipattern detection [WIP]
   - [ ] configurable via yaml file
 - [ ] option to store results in a structured format (json e.g.)

@@ -68,6 +68,8 @@ type Parser struct {
 	currentMode        string
 	previousKey        string
 	enableAntipatterns bool
+	isSearchActive     bool
+	isMotionActive     bool
 }
 
 func NewParser(enableAntipatterns bool) *Parser {
@@ -135,14 +137,46 @@ NextKey:
 }
 
 func (p *Parser) setNewMode(currentKey string) {
-	switch currentKey {
-	case CharReadableEsc:
-		if p.currentMode != NormalMode {
-			p.currentMode = NormalMode
-		}
-	case CharReadableEnter:
+	if currentKey == CharReadableEsc || currentKey == CharReadableCC {
+		p.currentMode = NormalMode
+		p.isSearchActive = false
+
+		return
+	}
+
+	if currentKey == CharReadableEnter {
 		if p.currentMode == CommandMode {
 			p.currentMode = NormalMode
+		}
+
+		p.isSearchActive = false
+		p.isMotionActive = false
+
+		return
+	}
+
+	if p.isSearchActive {
+		return
+	}
+
+	if p.isMotionActive {
+		p.isMotionActive = false
+
+		return
+	}
+
+	switch currentKey {
+	case "/", "?":
+		if p.currentMode == NormalMode || p.currentMode == VisualMode {
+			p.isSearchActive = true
+		}
+
+		return
+	case "f", "F", "t", "T":
+		if p.currentMode == NormalMode || p.currentMode == VisualMode {
+			p.isMotionActive = true
+
+			return
 		}
 	case "i", "I", "a", "A", "o", "O", "C":
 		if p.currentMode == NormalMode {

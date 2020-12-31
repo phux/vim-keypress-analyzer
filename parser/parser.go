@@ -178,7 +178,7 @@ func (p *Parser) setNewMode(currentKey string) {
 
 			return
 		}
-	case "i", "I", "a", "A", "o", "O", "C":
+	case "i", "I", "a", "A", "o", "O", "C", "s", "S":
 		if p.currentMode == NormalMode {
 			p.currentMode = InsertMode
 		}

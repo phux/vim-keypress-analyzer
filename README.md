@@ -151,6 +151,7 @@ $ vim-keypress-analyzer -f <a_log_file>
 ## TODO
 
 - [ ] improve motion detection - e.g. `ciw`
+- [ ] command & insert mode shares seem to high - check
 - [ ] rewrite antipattern detection [WIP]
   - [ ] configurable via yaml file
 - [ ] option to store results in a structured format (json e.g.)

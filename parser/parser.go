@@ -138,7 +138,11 @@ NextKey:
 
 func (p *Parser) setNewMode(currentKey string) {
 	if currentKey == CharReadableEsc || currentKey == CharReadableCC {
-		p.currentMode = NormalMode
+		if !p.isMotionActive {
+			p.currentMode = NormalMode
+		}
+
+		p.isMotionActive = false
 		p.isSearchActive = false
 
 		return
@@ -178,7 +182,12 @@ func (p *Parser) setNewMode(currentKey string) {
 
 			return
 		}
-	case "i", "I", "a", "A", "o", "O", "C", "s", "S":
+	case "i", "I", "a", "A":
+		// TODO: switch to motion detection for d & c
+		if p.currentMode == NormalMode && p.previousKey != "d" && p.previousKey != "c" {
+			p.currentMode = InsertMode
+		}
+	case "o", "O", "C", "s", "S":
 		if p.currentMode == NormalMode {
 			p.currentMode = InsertMode
 		}
@@ -196,6 +205,10 @@ func (p *Parser) setNewMode(currentKey string) {
 		case NormalMode:
 			p.currentMode = VisualMode
 		case VisualMode:
+			p.currentMode = NormalMode
+		}
+	case "d", "D", "p", "P", "y", "Y":
+		if p.currentMode == VisualMode {
 			p.currentMode = NormalMode
 		}
 	}

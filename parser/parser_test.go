@@ -186,6 +186,27 @@ func TestParser_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:  "visual mode with motion",
+			input: strings.NewReader("vibdw"),
+			expectedKeyMap: func() *tree.Node {
+				rootNode := tree.NewNode("")
+				addChildWithCount(rootNode, "v", 1)
+				addChildWithCount(rootNode, "i", 1)
+				addChildWithCount(rootNode, "b", 1)
+				addChildWithCount(rootNode, "d", 1)
+				addChildWithCount(rootNode, "w", 1)
+
+				return rootNode
+			},
+			expectedModeCount: func() *tree.Node {
+				rootNode := tree.NewNode("")
+				addChildWithCount(rootNode, parser.NormalMode, 2)
+				addChildWithCount(rootNode, parser.VisualMode, 3)
+
+				return rootNode
+			},
+		},
+		{
 			name:  "?/ disable insert triggers",
 			input: strings.NewReader("/iaIA" + string(parser.CharEsc) + "?iaIA"),
 			expectedKeyMap: func() *tree.Node {
@@ -257,6 +278,24 @@ func TestParser_Parse(t *testing.T) {
 				rootNode := tree.NewNode("")
 				addChildWithCount(rootNode, parser.NormalMode, 1)
 				addChildWithCount(rootNode, parser.InsertMode, 4)
+
+				return rootNode
+			},
+		},
+		{
+			name:  "delete with motion",
+			input: strings.NewReader("diw"),
+			expectedKeyMap: func() *tree.Node {
+				rootNode := tree.NewNode("")
+				addChildWithCount(rootNode, "d", 1)
+				addChildWithCount(rootNode, "i", 1)
+				addChildWithCount(rootNode, "w", 1)
+
+				return rootNode
+			},
+			expectedModeCount: func() *tree.Node {
+				rootNode := tree.NewNode("")
+				addChildWithCount(rootNode, parser.NormalMode, 3)
 
 				return rootNode
 			},
